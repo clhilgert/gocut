@@ -11,6 +11,7 @@ import (
 
 func main() {
 	field := flag.Int("f", 0, "field flag")
+	delimiter := flag.String("d", "\t", "delimiter flag")
 
 	flag.Parse()
 
@@ -23,7 +24,7 @@ func main() {
 	defer file.Close()
 
 	if *field > 0 {
-		result := cutField(*field, file)
+		result := cutField(file, *field, *delimiter)
 		fmt.Println(result)
 	} else {
 		fmt.Println("invalid field value")
@@ -31,14 +32,14 @@ func main() {
 
 }
 
-func cutField(field int, file *os.File) string {
+func cutField(file *os.File, field int, delimeter string) string {
 
 	var result []string
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
 		row := scanner.Text()
-		cols := strings.Split(row, "\t")
+		cols := strings.Split(row, delimeter)
 		result = append(result, cols[field-1])
 	}
 
