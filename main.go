@@ -6,42 +6,57 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
 func main() {
-	field := flag.Int("f", 0, "field flag")
+	fields := flag.String("f", "0", "fields flag")
 	delimiter := flag.String("d", "\t", "delimiter flag")
-
 	flag.Parse()
 
-	var file *os.File
-	var err error
-	file, err = os.Open(flag.Args()[0])
+	file, err := os.Open(flag.Args()[0])
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	if *field > 0 {
-		result := cutField(file, *field, *delimiter)
-		fmt.Println(result)
-	} else {
-		fmt.Println("invalid field value")
-	}
-
+	parsedFields := parseFields(*fields)
+	result := cutField(file, parsedFields, *delimiter)
+	fmt.Println(result)
 }
 
-func cutField(file *os.File, field int, delimeter string) string {
-
+func cutField(file *os.File, parsedFields []int, delimeter string) string {
 	var result []string
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
+		var line string
 		row := scanner.Text()
 		cols := strings.Split(row, delimeter)
-		result = append(result, cols[field-1])
+		for i, field := range parsedFields {
+			line += cols[field-1]
+			if i != len(parsedFields)-1 {
+				line += delimeter
+			}
+		}
+		result = append(result, line)
 	}
-
 	return strings.Join(result, "\n")
+}
+
+func parseFields(fields string) []int {
+	normalized := strings.ReplaceAll(fields, ",", " ")
+	parts := strings.Fields(normalized)
+
+	var result []int
+	for _, part := range parts {
+		num, err := strconv.Atoi(part)
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			result = append(result, num)
+		}
+	}
+	return result
 }
