@@ -2,7 +2,8 @@
 
 cut cli util written in go
 
-### single field (default tab delimiter)
+### single field
+default tab delimiter
 ```bash
 gocut -f 2 sample.tsv
 
@@ -13,7 +14,7 @@ f1
 16
 21
 ```
-### single field with custom delimiter
+custom delimiter
 ```bash
 gocut -f 1 -d , fourchords.csv | head -n 5
 
