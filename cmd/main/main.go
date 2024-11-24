@@ -1,18 +1,17 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"log"
 	"os"
-	"strconv"
-	"strings"
+
+	"github.com/clhilgert/gocut/cmd/internal/fields"
 )
 
 func main() {
-	fields := flag.String("f", "0", "fields flag")
-	delimiter := flag.String("d", "\t", "delimiter flag")
+	fieldSpec := flag.String("f", "0", "Specify fields to extract (comma or whitespace separated)")
+	delimiter := flag.String("d", "\t", "Specify field delimiter (default: tab)")
 	flag.Parse()
 	args := flag.Args()
 
@@ -29,42 +28,7 @@ func main() {
 		defer file.Close()
 	}
 
-	parsedFields := parseFields(*fields)
-	result := cutField(file, parsedFields, *delimiter)
+	parsedFields := fields.ParseFields(*fieldSpec)
+	result := fields.CutField(file, parsedFields, *delimiter)
 	fmt.Println(result)
-}
-
-func cutField(file *os.File, parsedFields []int, delimeter string) string {
-	var result []string
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		var line string
-		row := scanner.Text()
-		cols := strings.Split(row, delimeter)
-		for i, field := range parsedFields {
-			line += cols[field-1]
-			if i != len(parsedFields)-1 {
-				line += delimeter
-			}
-		}
-		result = append(result, line)
-	}
-	return strings.Join(result, "\n")
-}
-
-func parseFields(fields string) []int {
-	normalized := strings.ReplaceAll(fields, ",", " ")
-	parts := strings.Fields(normalized)
-
-	var result []int
-	for _, part := range parts {
-		num, err := strconv.Atoi(part)
-		if err != nil {
-			log.Fatal(err)
-		} else {
-			result = append(result, num)
-		}
-	}
-	return result
 }
