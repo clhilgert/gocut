@@ -2,7 +2,7 @@
 
 cut cli util written in go
 
-#### single field (default tab delimiter)
+### single field (default tab delimiter)
 ```bash
 gocut -f 2 sample.tsv
 
@@ -13,7 +13,7 @@ f1
 16
 21
 ```
-#### single field with custom delimiter
+### single field with custom delimiter
 ```bash
 gocut -f 1 -d , fourchords.csv | head -n 5
 
@@ -23,7 +23,7 @@ Song title
 "Adore You"
 "Africa"
 ```
-#### list of fields
+### list of fields
 ```bash
 gocut -f 1,2 sample.tsv
 
@@ -43,4 +43,24 @@ Song title,Artist
 "20 Good Reasons",Thirsty Merc
 "Adore You",Harry Styles
 "Africa",Toto
+```
+### stdin
+```bash
+tail -n 5 fourchords.csv | gocut -d , -f "1 2"
+
+"Young Volcanoes",Fall Out Boy
+"You Found Me",The Fray
+"You'll Think Of Me",Keith Urban
+"You're Not Sorry",Taylor Swift
+"Zombie",The Cranberries
+```
+single dash provided (`-`)
+```bash
+tail -n 5 fourchords.csv | gocut -d , -f "1 2" -
+
+"Young Volcanoes",Fall Out Boy
+"You Found Me",The Fray
+"You'll Think Of Me",Keith Urban
+"You're Not Sorry",Taylor Swift
+"Zombie",The Cranberries
 ```

@@ -14,12 +14,20 @@ func main() {
 	fields := flag.String("f", "0", "fields flag")
 	delimiter := flag.String("d", "\t", "delimiter flag")
 	flag.Parse()
+	args := flag.Args()
 
-	file, err := os.Open(flag.Args()[0])
-	if err != nil {
-		log.Fatal(err)
+	var file *os.File
+
+	if len(args) == 0 || args[0] == "-" {
+		file = os.Stdin
+	} else {
+		var err error
+		file, err = os.Open(args[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
 	}
-	defer file.Close()
 
 	parsedFields := parseFields(*fields)
 	result := cutField(file, parsedFields, *delimiter)
